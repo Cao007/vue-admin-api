@@ -16,32 +16,22 @@ const { mailProducer } = require('../../utils/rabbit-mq')
  */
 router.post('/sign_up', validateCaptcha, async function (req, res) {
   try {
-    const body = {
-      email: req.body.email,
-      username: req.body.username,
-      nickname: req.body.nickname,
-      password: req.body.password,
-      gender: req.body.gender,
-      role: 0
-    }
+    const body = filterBody(req)
 
     const user = await User.create(body)
     delete user.dataValues.password // 删除密码字段
 
-    // 请求成功，删除验证码，防止在有效期内重复使用
+    // 请求成功，删除redis缓存的验证码，防止在有效期内重复使用
     await delKey(req.body.captchaKey)
 
     // 发送邮件
     // 将邮件发送请求放入队列
     const msg = {
       to: user.email,
-      subject: '「长乐未央」的注册成功通知',
+      subject: 'vue-admin注册成功通知',
       html: `
         您好，<span style="color: red">${user.nickname}</span>。<br><br>
-        恭喜，您已成功注册会员！<br><br>
-        请访问<a href="https://clwy.cn">「长乐未央」</a>官网，了解更多。<br><br>
-        ━━━━━━━━━━━━━━━━<br>
-        长乐未央
+        恭喜，您已成功注册会员！
       `
     }
     await mailProducer(msg)
@@ -99,5 +89,24 @@ router.post('/sign_in', async (req, res) => {
     failure(res, error)
   }
 })
+
+/**
+ * 公共方法：白名单过滤
+ * @param req
+ * @return {{email: *, username: *, password: *, nickname: *, gender: *, company: *, introduce: *, role: *, avatar: *}}
+ */
+function filterBody(req) {
+  return {
+    email: req.body.email,
+    username: req.body.username,
+    password: req.body.password,
+    nickname: req.body.nickname,
+    gender: req.body.gender,
+    company: req.body.company,
+    introduce: req.body.introduce,
+    role: req.body.role,
+    avatar: req.body.avatar
+  }
+}
 
 module.exports = router

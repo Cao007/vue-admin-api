@@ -6,10 +6,10 @@ const clients = new Set()
 
 /**
  * 初始化每个月用户数量数据流
- * @param res
  * @param req
+ * @param res
  */
-function initUserStream(res, req) {
+function initUserStream(req, res) {
   // 设置 event-stream 响应头
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')

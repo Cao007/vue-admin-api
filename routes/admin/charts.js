@@ -61,7 +61,7 @@ router.get('/gender', async function (req, res) {
  */
 router.get('/user', async (req, res) => {
   try {
-    initUserStream(res, req)
+    initUserStream(req, res)
 
     // 使用SSE广播数据
     await broadUserCount()

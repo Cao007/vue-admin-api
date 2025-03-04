@@ -38,6 +38,12 @@ router.get('/', async function (req, res) {
       }
     }
 
+    if (query.content) {
+      condition.where.content = {
+        [Op.like]: `%${query.content}%`
+      }
+    }
+
     const { count, rows } = await Article.findAndCountAll(condition)
     success(res, '查询文章列表成功。', {
       articles: rows,

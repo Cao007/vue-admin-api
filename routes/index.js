@@ -6,9 +6,7 @@ const adminAuth = require('../middlewares/admin-auth')
 const userAuth = require('../middlewares/user-auth')
 
 // 前台路由文件
-const indexRouter = require('./front/home')
 const articlesRouter = require('./front/articles')
-const searchRouter = require('./front/search')
 const authRouter = require('./front/auth')
 const usersRouter = require('./front/users')
 
@@ -26,9 +24,7 @@ const captchaRouter = require('./common/captcha')
 /**
  * 前台路由配置
  */
-router.use('/front/home', indexRouter)
 router.use('/front/articles', articlesRouter)
-router.use('/front/search', searchRouter)
 router.use('/front/auth', authRouter)
 router.use('/front/users', userAuth, usersRouter)
 

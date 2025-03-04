@@ -30,6 +30,7 @@ router.get('/', async function (req, res) {
       offset: offset
     }
 
+    // 2.如果缓存中没有，则从数据库中查询
     const { count, rows } = await Article.findAndCountAll(condition)
     data = {
       articles: rows,
@@ -40,7 +41,7 @@ router.get('/', async function (req, res) {
       }
     }
 
-    // 2.将查询到的数据缓存到 Redis 中
+    // 3.将查询到的数据缓存到 Redis 中
     await setKey(cacheKey, data)
 
     success(res, '查询文章列表成功。', data)
@@ -57,14 +58,21 @@ router.get('/:id', async function (req, res) {
   try {
     const { id } = req.params
 
-    let article = await getKey(`article:${id}`)
-    if (!article) {
-      article = await Article.findByPk(id)
-      if (!article) {
-        throw new NotFound(`ID: ${id}的文章未找到。`)
-      }
-      await setKey(`article:${id}`, article)
+    // 1.定义带有 id 的 cacheKey 作为缓存的键
+    const cacheKey = `article:${id}`
+    let article = await getKey(cacheKey)
+    if (article) {
+      return success(res, '查询文章详情成功。', { article })
     }
+
+    // 2.如果缓存中没有，则从数据库中查询
+    article = await Article.findByPk(id)
+    if (!article) {
+      throw new NotFound(`ID: ${id}的文章未找到。`)
+    }
+
+    // 3.将查询到的数据缓存到 Redis 中
+    await setKey(cacheKey, article)
 
     success(res, '查询文章成功。', { article })
   } catch (error) {
