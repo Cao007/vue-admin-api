@@ -1,0 +1,27 @@
+{
+  "development": {
+    "username": "root",
+    "password": "vue-admin-api",
+    "database": "vue-admin-api-development",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "timezone": "+08:00",
+    "logQueryParameters": true
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "vue-admin-api-test",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "timezone": "+08:00"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "vue-admin-api-production",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "timezone": "+08:00"
+  }
+}
