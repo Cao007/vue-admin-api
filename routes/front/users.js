@@ -5,6 +5,7 @@ const { success, failure } = require('../../utils/responses')
 const { BadRequest, NotFound } = require('http-errors')
 const bcrypt = require('bcryptjs')
 const { setKey, getKey, delKey } = require('../../utils/redis')
+const { mailProducer } = require('../../utils/rabbit-mq')
 
 /**
  * 查询当前登录用户详情
@@ -96,6 +97,18 @@ router.put('/account', async function (req, res) {
     delete user.dataValues.password
 
     await clearCache(user)
+
+    // 发送邮件
+    const msg = {
+      to: user.email,
+      subject: 'vue-admin更新账户信息成功通知',
+      html: `
+        您好，<span style="color: red">${user.nickname}</span>。<br><br>
+        恭喜，您已成功更新账户信息！<br><br>
+        ${user}
+      `
+    }
+    await mailProducer(msg)
 
     success(res, '更新账户信息成功。', { user })
   } catch (error) {
