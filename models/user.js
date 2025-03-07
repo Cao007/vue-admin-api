@@ -85,9 +85,8 @@ module.exports = (sequelize, DataTypes) => {
       introduce: DataTypes.TEXT,
       role: {
         type: DataTypes.TINYINT,
-        allowNull: false,
+        defaultValue: 0,
         validate: {
-          notNull: { msg: '用户组必须选择。' },
           notEmpty: { msg: '用户组不能为空。' },
           isIn: { args: [[0, 100]], msg: '用户组的值必须是，普通用户：0 管理员：100。' }
         }
