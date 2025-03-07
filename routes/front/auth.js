@@ -19,9 +19,11 @@ router.post('/sign_up', validateCaptcha, async function (req, res) {
     const body = filterBody(req)
 
     const user = await User.create(body)
-    delete user.dataValues.password // 删除密码字段
 
-    // 请求成功，删除redis缓存的验证码，防止在有效期内重复使用
+    // 删除密码字段
+    delete user.dataValues.password
+
+    // 注册成功，删除redis缓存的验证码，防止在有效期内重复使用
     await delKey(req.body.captchaKey)
 
     // 发送邮件

@@ -12,11 +12,22 @@ const { setKey, getKey, delKey } = require('../../utils/redis')
  */
 router.get('/me', async function (req, res) {
   try {
-    let user = await getKey(`user:${req.userId}`)
-    if (!user) {
-      user = await getUser(req)
-      await setKey(`user:${req.userId}`, user)
+    // 1.定义带有 id 的 cacheKey 作为缓存的键
+    const cacheKey = `user:${req.userId}`
+    let user = await getKey(cacheKey)
+    if (user) {
+      return success(res, '查询当前用户信息成功。', { user })
     }
+
+    // 2.如果缓存中没有，则从数据库中查询
+    user = await getUser(req)
+    if (!user) {
+      throw new NotFound(`ID: ${req.userId}的用户未找到。`)
+    }
+
+    // 3.将查询结果存入缓存
+    await setKey(cacheKey, user)
+
     success(res, '查询当前用户信息成功。', { user })
   } catch (error) {
     failure(res, error)
