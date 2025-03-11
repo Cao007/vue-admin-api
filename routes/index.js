@@ -16,6 +16,7 @@ const adminUsersRouter = require('./admin/users')
 const adminChartsRouter = require('./admin/charts')
 const adminAuthRouter = require('./admin/auth')
 const adminLogsRouter = require('./admin/logs')
+const adminAttachmentsRouter = require('./admin/attachments')
 
 // 公共路由文件
 const uploadsRouter = require('./common/uploads')
@@ -36,6 +37,7 @@ router.use('/admin/users', adminAuth, adminUsersRouter)
 router.use('/admin/charts', adminAuth, adminChartsRouter)
 router.use('/admin/auth', adminAuthRouter)
 router.use('/admin/logs', adminAuth, adminLogsRouter)
+router.use('/admin/attachments', adminAuth, adminAttachmentsRouter)
 
 /**
  * 公共路由配置
