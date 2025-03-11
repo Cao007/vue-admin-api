@@ -25,7 +25,7 @@ router.get('/', async function (req, res) {
     }
 
     // 查询被软删除的数据
-    if (query.deleted === 'true') {
+    if (query.softDeleted === 'true') {
       condition.paranoid = false
       condition.where.deletedAt = {
         [Op.not]: null

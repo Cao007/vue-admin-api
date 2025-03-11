@@ -29,10 +29,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         }
       },
-      content: DataTypes.TEXT,
-      deletedAt: {
-        type: DataTypes.DATE
-      }
+      content: DataTypes.TEXT
     },
     {
       sequelize,
