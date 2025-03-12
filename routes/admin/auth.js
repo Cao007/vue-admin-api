@@ -61,4 +61,12 @@ router.post('/sign_in', async (req, res) => {
   }
 })
 
+/**
+ * 退出登录（前端删除 token）
+ * POST /admin/auth/logout
+ */
+router.post('/logout', (req, res) => {
+  success(res, '退出成功。')
+})
+
 module.exports = router
