@@ -64,7 +64,12 @@ router.get('/me', async function (req, res) {
   try {
     // 登录成功后，获取挂在到req上的user对象
     const user = req.user
-    success(res, '查询当前用户信息成功。', { user })
+
+    // 删除密码字段
+    delete user.dataValues.password
+
+    // 解构user ...user.dataValues
+    success(res, '查询当前用户信息成功。', { ...user.dataValues })
   } catch (error) {
     failure(res, error)
   }
