@@ -11,7 +11,7 @@ const logger = require('./logger')
  */
 function success(res, message, data = {}, code = 200) {
   res.status(code).json({
-    status: true,
+    code: code,
     message,
     data
   })
@@ -56,7 +56,7 @@ function failure(res, error) {
   }
 
   res.status(statusCode).json({
-    status: false,
+    code: statusCode,
     message: `请求失败: ${error.name}`,
     errors: Array.isArray(errors) ? errors : [errors]
   })
