@@ -22,6 +22,7 @@ const adminTrademarksRouter = require('./admin/trademarks')
 // 公共路由文件
 const uploadsRouter = require('./common/uploads')
 const captchaRouter = require('./common/captcha')
+const treesRouter = require('./common/trees')
 
 /**
  * 前台路由配置
@@ -46,5 +47,6 @@ router.use('/admin/trademarks', adminAuth, adminTrademarksRouter)
  */
 router.use('/common/uploads', userAuth, uploadsRouter)
 router.use('/common/captcha', captchaRouter)
+router.use('/common/trees', treesRouter)
 
 module.exports = router
