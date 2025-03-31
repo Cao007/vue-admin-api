@@ -9,8 +9,12 @@ const { delKey } = require('../utils/redis')
  * 公共方法：清除缓存
  * @param user
  */
-async function clearCache(user) {
-  await delKey(`user:${user.id}`)
+async function clearCache(id = null) {
+  try {
+    await delKey(`user:${id}`)
+  } catch (error) {
+    console.error('Error clearing cache:', error)
+  }
 }
 
 module.exports = (sequelize, DataTypes) => {
@@ -127,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
             console.error('Meilisearch Error:', error)
           }
           // 清除redis缓存
-          await clearCache(user)
+          await clearCache(user.id)
         },
         // 更新之后
         afterUpdate: async (user) => {
@@ -144,7 +148,7 @@ module.exports = (sequelize, DataTypes) => {
           } catch (error) {
             console.error('Meilisearch Error:', error)
           }
-          await clearCache(user)
+          await clearCache(user.id)
         },
         // 删除之后
         afterDestroy: async (user) => {
@@ -153,7 +157,7 @@ module.exports = (sequelize, DataTypes) => {
           } catch (error) {
             console.error('Meilisearch Error:', error)
           }
-          await clearCache(user)
+          await clearCache(user.id)
         }
       },
       sequelize,
