@@ -24,6 +24,7 @@ const adminSettingsRouter = require('./admin/settings')
 const uploadsRouter = require('./common/uploads')
 const captchaRouter = require('./common/captcha')
 const treesRouter = require('./common/trees')
+const searchRouter = require('./common/search')
 
 /**
  * 前台路由配置
@@ -50,5 +51,6 @@ router.use('/admin/settings', adminAuth, adminSettingsRouter)
 router.use('/common/uploads', userAuth, uploadsRouter)
 router.use('/common/captcha', captchaRouter)
 router.use('/common/trees', treesRouter)
+router.use('/common/search', searchRouter)
 
 module.exports = router
