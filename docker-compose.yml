@@ -1,7 +1,6 @@
 name: vue-admin-api
 services:
   mysql:
-    container_name: mysql_vue_admin_api
     networks:
       - vue-admin-api-network
     image: mysql:8.3.0
@@ -16,7 +15,6 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
   redis:
-    container_name: redis_vue_admin_api
     networks:
       - vue-admin-api-network
     image: redis:7.4
@@ -25,7 +23,6 @@ services:
     volumes:
       - ./data/redis:/data
   rabbitmq:
-    container_name: rabbitmq_vue_admin_api
     networks:
       - vue-admin-api-network
     image: rabbitmq:4.0-management
@@ -37,6 +34,18 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: 123456
+  meilisearch:
+    networks:
+      - vue-admin-api-network
+    image: getmeili/meilisearch:v1.13.3
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=Pqq-IQRvyGgk4TT60glCapPIAUOD6SraSC86PUU_Djk
+    ports:
+      - '7700:7700'
+    volumes:
+      - ./data/meili_data:/meili_data
+
 networks:
   vue-admin-api-network:
     driver: bridge

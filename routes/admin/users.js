@@ -4,7 +4,6 @@ const { User } = require('../../models')
 const { Op } = require('sequelize')
 const { NotFound } = require('http-errors')
 const { success, failure } = require('../../utils/responses')
-const { delKey } = require('../../utils/redis')
 const { broadUserCount } = require('../../streams/userCount')
 /**
  * 查询用户列表
@@ -98,8 +97,6 @@ router.post('/', async function (req, res) {
 
     const user = await User.create(body)
 
-    await clearCache(user)
-
     // 使用SSE广播数据
     await broadUserCount()
     success(res, '创建用户成功。', { user }, 201)
@@ -119,8 +116,6 @@ router.put('/:id', async function (req, res) {
 
     await user.update(body)
 
-    await clearCache(user)
-
     success(res, '更新用户成功。', { user })
   } catch (error) {
     failure(res, error)
@@ -137,8 +132,6 @@ router.delete('/:id', async function (req, res) {
 
     await user.destroy()
 
-    await clearCache(user)
-
     // 使用SSE广播数据
     await broadUserCount()
     success(res, '删除用户成功。')
@@ -146,14 +139,6 @@ router.delete('/:id', async function (req, res) {
     failure(res, error)
   }
 })
-
-/**
- * 公共方法：清除缓存
- * @param user
- */
-async function clearCache(user) {
-  await delKey(`user:${user.id}`)
-}
 
 /**
  * 公共方法：查询当前用户

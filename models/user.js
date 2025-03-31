@@ -2,6 +2,16 @@
 const { Model } = require('sequelize')
 const bcrypt = require('bcryptjs')
 const { BadRequest } = require('http-errors')
+const { usersIndex } = require('../utils/meilisearch')
+const { delKey } = require('../utils/redis')
+
+/**
+ * 公共方法：清除缓存
+ * @param user
+ */
+async function clearCache(user) {
+  await delKey(`user:${user.id}`)
+}
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -99,6 +109,53 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     {
+      hooks: {
+        // 创建之后
+        afterCreate: async (user) => {
+          try {
+            // 添加到搜索引擎
+            await usersIndex.addDocuments([
+              {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                nickname: user.nickname,
+                avatar: user.avatar
+              }
+            ])
+          } catch (error) {
+            console.error('Meilisearch Error:', error)
+          }
+          // 清除redis缓存
+          await clearCache(user)
+        },
+        // 更新之后
+        afterUpdate: async (user) => {
+          try {
+            await usersIndex.updateDocuments([
+              {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                nickname: user.nickname,
+                avatar: user.avatar
+              }
+            ])
+          } catch (error) {
+            console.error('Meilisearch Error:', error)
+          }
+          await clearCache(user)
+        },
+        // 删除之后
+        afterDestroy: async (user) => {
+          try {
+            await usersIndex.deleteDocuments([user.id])
+          } catch (error) {
+            console.error('Meilisearch Error:', error)
+          }
+          await clearCache(user)
+        }
+      },
       sequelize,
       modelName: 'User'
     }

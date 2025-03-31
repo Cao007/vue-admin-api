@@ -4,7 +4,7 @@ const { User } = require('../../models')
 const { success, failure } = require('../../utils/responses')
 const { BadRequest, NotFound } = require('http-errors')
 const bcrypt = require('bcryptjs')
-const { setKey, getKey, delKey } = require('../../utils/redis')
+const { setKey, getKey } = require('../../utils/redis')
 const { mailProducer } = require('../../utils/rabbit-mq')
 
 /**
@@ -52,8 +52,6 @@ router.put('/info', async function (req, res) {
     const user = await getUser(req)
     await user.update(body)
 
-    await clearCache(user)
-
     success(res, '更新用户信息成功。', { user })
   } catch (error) {
     failure(res, error)
@@ -96,8 +94,6 @@ router.put('/account', async function (req, res) {
     // 删除密码字段
     delete user.dataValues.password
 
-    await clearCache(user)
-
     // 发送邮件
     const msg = {
       to: user.email,
@@ -115,14 +111,6 @@ router.put('/account', async function (req, res) {
     failure(res, error)
   }
 })
-
-/**
- * 公共方法：清除缓存
- * @param user
- */
-async function clearCache(user) {
-  await delKey(`user:${user.id}`)
-}
 
 /**
  * 公共方法：查询当前用户
