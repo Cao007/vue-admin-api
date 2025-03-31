@@ -170,17 +170,21 @@ router.post('/force_delete', async function (req, res) {
  * @returns {Promise<void>}
  */
 async function clearCache(id = null) {
-  // 清除所有文章列表缓存
-  let keys = await getKeysByPattern('articles:*')
-  if (keys.length !== 0) {
-    await delKey(keys)
-  }
+  try {
+    // 清除所有文章列表缓存
+    let keys = await getKeysByPattern('articles:*')
+    if (keys.length !== 0) {
+      await delKey(keys)
+    }
 
-  // 如果传递了id，则通过id清除文章详情缓存
-  if (id) {
-    // 如果是数组，则遍历
-    const keys = Array.isArray(id) ? id.map((item) => `article:${item}`) : `article:${id}`
-    await delKey(keys)
+    // 如果传递了 id，则清除文章详情缓存
+    if (id) {
+      // 统一转换为数组，确保 delKey 传递正确
+      const cacheKeys = Array.isArray(id) ? id.map((item) => `article:${item}`) : [`article:${id}`]
+      await delKey(cacheKeys)
+    }
+  } catch (error) {
+    console.error('Error clearing cache:', error)
   }
 }
 
